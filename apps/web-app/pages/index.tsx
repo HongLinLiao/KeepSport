@@ -15,9 +15,6 @@ export function Index() {
         <p>Card content</p>
         <p>Card content</p>
       </Card>
-      <Card style={{ width: 'max-content' }}>
-        <Button onClick={ctx.toggleDarkMode}>Change Theme</Button>
-      </Card>
     </>
   );
 }

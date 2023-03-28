@@ -1,7 +1,9 @@
 import AntDesignProvider from '@/components/provider/AntDesignProvider';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import './styles.css';
+
+import './reset.css';
+import './tailwind.css';
 
 function CustomApp({ Component, pageProps }: AppProps) {
   return (

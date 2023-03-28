@@ -21,7 +21,13 @@ const AntDesignProvider: FC<Props> = ({ children }) => {
           algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
         }}
       >
-        {children}
+        <div
+          className={`min-h-screen max-h-full ${
+            isDarkMode ? 'bg-black' : 'bg-white'
+          }`}
+        >
+          {children}
+        </div>
       </ConfigProvider>
     </GeneralContext.Provider>
   );
