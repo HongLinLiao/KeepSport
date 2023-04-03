@@ -4,6 +4,7 @@ import Head from 'next/head';
 
 import './reset.css';
 import './tailwind.css';
+import '@/utils/prototype';
 
 function CustomApp({ Component, pageProps }: AppProps) {
   return (
