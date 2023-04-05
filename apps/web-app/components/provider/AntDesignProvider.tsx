@@ -1,6 +1,6 @@
 import { FC, ReactNode, useState } from 'react';
 import { ConfigProvider, theme } from 'antd';
-import GeneralContext from '@/context/GeneralContext';
+import AntDesignContext from '@/contexts/AntDesignContext';
 
 type Props = {
   children: ReactNode;
@@ -10,7 +10,7 @@ const AntDesignProvider: FC<Props> = ({ children }) => {
   const [isDarkMode, setDarkMode] = useState(true);
 
   return (
-    <GeneralContext.Provider
+    <AntDesignContext.Provider
       value={{
         isDarkMode,
         toggleDarkMode: () => setDarkMode((pre) => !pre),
@@ -29,7 +29,7 @@ const AntDesignProvider: FC<Props> = ({ children }) => {
           {children}
         </div>
       </ConfigProvider>
-    </GeneralContext.Provider>
+    </AntDesignContext.Provider>
   );
 };
 
