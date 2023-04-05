@@ -1,6 +1,7 @@
-import AntDesignProvider from '@/components/provider/AntDesignProvider';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+
+import AntDesignProvider from '@/components/provider/AntDesignProvider';
 
 import './reset.css';
 import './tailwind.css';
