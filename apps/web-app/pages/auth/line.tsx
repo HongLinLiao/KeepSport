@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useEffect } from 'react';
 
+import { NextPageWithProps } from '../_app';
 import useLineLogin from '@/hooks/useLineLogin';
 import getEnv from '@/utils/env';
 import OauthConfig from '@/interfaces/OauthConfig';
@@ -10,7 +11,7 @@ type Props = {
   lineOauthConfig: OauthConfig;
 };
 
-export const Line: NextPage<Props> = ({ lineOauthConfig }) => {
+export const Line: NextPageWithProps<Props> = ({ lineOauthConfig }) => {
   const { getToken, getUserProfile, revokeToken } =
     useLineLogin(lineOauthConfig);
   const {
