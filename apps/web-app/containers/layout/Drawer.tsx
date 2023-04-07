@@ -1,24 +1,27 @@
-import { Button, Drawer as AntDrawer } from 'antd';
-import { FC } from 'react';
+import useGeneral from '@/hooks/useGeneral';
+import useLineLogin from '@/hooks/useLineLogin';
+import { Button, Drawer as AntDrawer, Typography } from 'antd';
 
-type Props = {
-  open: boolean;
-  onClose: () => void;
-};
+const Drawer = () => {
+  const { userInfo, isDrawerOpen, setDrawer } = useGeneral();
+  const { redirectToOAuth } = useLineLogin();
 
-const Drawer: FC<Props> = ({ open, onClose }) => {
   return (
     <AntDrawer
       title={
-        <>
-          <Button>SignIn</Button>
-          <Button>Logout</Button>
-        </>
+        userInfo ? (
+          <>
+            <Typography>Hi {userInfo.userName}!</Typography>
+            <Button>Logout</Button>
+          </>
+        ) : (
+          <Button onClick={redirectToOAuth}>SignIn</Button>
+        )
       }
       placement={'right'}
       width={250}
-      onClose={onClose}
-      open={open}
+      onClose={() => setDrawer(false)}
+      open={isDrawerOpen}
       closable={false}
       maskClosable
       // extra={

@@ -1,51 +1,24 @@
 import { useRouter } from 'next/router';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useEffect } from 'react';
 
-import { NextPageWithProps } from '../_app';
 import useLineLogin from '@/hooks/useLineLogin';
-import getEnv from '@/utils/env';
-import OauthConfig from '@/interfaces/OauthConfig';
 
-type Props = {
-  lineOauthConfig: OauthConfig;
-};
-
-export const Line: NextPageWithProps<Props> = ({ lineOauthConfig }) => {
-  const { getToken, getUserProfile, revokeToken } =
-    useLineLogin(lineOauthConfig);
+export const Line = () => {
+  const { login } = useLineLogin();
   const {
-    push,
-    query: { code },
+    isReady,
+    query: { code, state },
   } = useRouter();
 
   useEffect(() => {
     (async function () {
-      if (code) {
-        const oauthData = await getToken(code as string);
-        const userProfile = await getUserProfile(oauthData.access_token);
-        alert(JSON.stringify(userProfile));
-        await revokeToken(oauthData.access_token);
-        push('/');
+      if (code && state) {
+        await login(code as string, state as string);
       }
     })();
-  }, [code, getToken, push, getUserProfile, revokeToken]);
+  }, [isReady, code, state, login]);
 
   return <></>;
-};
-
-export const getServerSideProps: GetServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
-  const env = getEnv();
-  return {
-    props: {
-      lineOauthConfig: {
-        clientId: env.LINE_OAUTH_CLIENT_ID,
-        clientSecret: env.LINE_OAUTH_CLIENT_SECRET,
-      },
-    },
-  };
 };
 
 export default Line;
