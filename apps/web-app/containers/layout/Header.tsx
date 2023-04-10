@@ -1,4 +1,4 @@
-import useGeneral from '@/hooks/useGeneral';
+import useGeneral from '@/hooks/context/useGeneral';
 import { MenuOutlined } from '@ant-design/icons';
 import { Typography } from 'antd';
 

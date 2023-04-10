@@ -10,6 +10,7 @@ import AxiosProvider from '@/components/provider/AxiosProvider';
 import AntDesignProvider from '@/components/provider/AntDesignProvider';
 import AppLayout from '@/containers/layout/AppLayout';
 import GeneralProvider from '@/components/provider/GeneralProvider';
+import AuthProvider from '@/components/provider/AuthProvider';
 
 export type NextPageWithProps<P = unknown, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -32,9 +33,11 @@ function CustomApp({ Component, pageProps }: AppWithProps) {
       <main className="app">
         <AxiosProvider>
           <AntDesignProvider>
-            <GeneralProvider>
-              {getLayout(<Component {...pageProps} />)}
-            </GeneralProvider>
+            <AuthProvider>
+              <GeneralProvider>
+                {getLayout(<Component {...pageProps} />)}
+              </GeneralProvider>
+            </AuthProvider>
           </AntDesignProvider>
         </AxiosProvider>
       </main>

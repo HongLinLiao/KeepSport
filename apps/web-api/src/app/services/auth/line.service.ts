@@ -1,7 +1,8 @@
+import { ThirdPartyJwtInfo } from './../../models/services/jwt.interface';
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { v4 as uuid } from 'uuid';
-import { concatMap, of, catchError, Observable } from 'rxjs';
+import { concatMap, of, catchError, Observable, throwError } from 'rxjs';
 
 import { AppConfig } from './../config.service';
 import { serviceSuccess, serviceError, ServiceResult } from '../service-result';
@@ -9,9 +10,15 @@ import {
   LINEOAuth,
   VerifyLINEJWT,
   VerifyLINEOAuth,
+  LINEUserProfile,
 } from '../../models/services/line.interface';
+import { SignInType } from '@model';
 
-const authorizeUri = 'https://access.line.me/oauth2/v2.1/authorize';
+const LINE_AUTHORIZE_ENDPOINT = 'https://access.line.me/oauth2/v2.1';
+const LINE_OAUTH_ENDPOINT = 'https://api.line.me/oauth2/v2.1';
+
+const LINE_USER_PROFILE_ENDPOINT = 'https://api.line.me/v2';
+const REQUEST_CONTENT_TYPE = 'application/x-www-form-urlencoded';
 
 @Injectable()
 export class LineService {
@@ -45,7 +52,7 @@ export class LineService {
     return of(queryStrings).pipe(
       concatMap((queries) =>
         of(
-          `${authorizeUri}?${queries
+          `${LINE_AUTHORIZE_ENDPOINT}/authorize?${queries
             .map((e) => `${e.key}=${e.value}`)
             .join('&')}`
         )
@@ -55,13 +62,43 @@ export class LineService {
     );
   }
 
+  signIn(code: string): Observable<ServiceResult<ThirdPartyJwtInfo>> {
+    return this.getToken(code).pipe(
+      concatMap((tokenResult) => {
+        if (tokenResult.isOk && tokenResult.data) {
+          return this.getUserProfile(tokenResult.data.access_token);
+        } else {
+          throwError(() => tokenResult.error);
+        }
+      }),
+      concatMap((profileResult) => {
+        if (profileResult.isOk && profileResult.data) {
+          const {
+            userId: uid,
+            displayName: userName,
+            pictureUrl: avatar,
+          } = profileResult.data;
+          return serviceSuccess<ThirdPartyJwtInfo>({
+            uid,
+            userName,
+            avatar,
+            signInType: SignInType.LINE,
+          });
+        } else {
+          throwError(() => profileResult.error);
+        }
+      }),
+      catchError((error) => serviceError<ThirdPartyJwtInfo>(error))
+    );
+  }
+
   getToken(code: string): Observable<ServiceResult<LINEOAuth>> {
     return this._http
       .request<LINEOAuth>({
-        url: 'https://api.line.me/oauth2/v2.1/token',
+        url: `${LINE_OAUTH_ENDPOINT}/token`,
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': REQUEST_CONTENT_TYPE,
         },
         data: {
           grant_type: 'authorization_code',
@@ -81,10 +118,10 @@ export class LineService {
   verifyToken(accessToken: string): Observable<ServiceResult<VerifyLINEOAuth>> {
     return this._http
       .request<VerifyLINEOAuth>({
-        url: 'https://api.line.me/oauth2/v2.1/verify',
+        url: `${LINE_OAUTH_ENDPOINT}/verify`,
         method: 'GET',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': REQUEST_CONTENT_TYPE,
         },
         params: {
           access_token: accessToken,
@@ -100,10 +137,10 @@ export class LineService {
   refreshToken(refreshToken: string): Observable<ServiceResult<LINEOAuth>> {
     return this._http
       .request<LINEOAuth>({
-        url: 'https://api.line.me/oauth2/v2.1/token',
+        url: `${LINE_OAUTH_ENDPOINT}/token`,
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': REQUEST_CONTENT_TYPE,
         },
         data: {
           grant_type: 'refresh_token',
@@ -122,10 +159,10 @@ export class LineService {
   revokeToken(token: string): Observable<ServiceResult> {
     return this._http
       .request({
-        url: 'https://api.line.me/oauth2/v2.1/revoke',
+        url: `${LINE_OAUTH_ENDPOINT}/revoke`,
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': REQUEST_CONTENT_TYPE,
         },
         data: {
           access_token: token,
@@ -144,14 +181,12 @@ export class LineService {
     nonce?: string,
     userId?: string
   ): Observable<ServiceResult<VerifyLINEJWT>> {
-    console.log(idToken);
-
     return this._http
       .request<VerifyLINEJWT>({
-        url: 'https://api.line.me/oauth2/v2.1/verify',
+        url: `${LINE_OAUTH_ENDPOINT}/verify`,
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': REQUEST_CONTENT_TYPE,
         },
         data: {
           id_token: idToken,
@@ -164,6 +199,24 @@ export class LineService {
         concatMap((res) => of(res.data)),
         concatMap((data) => serviceSuccess(data)),
         catchError((error) => serviceError<VerifyLINEJWT>(error))
+      );
+  }
+
+  getUserProfile(
+    accessToken: string
+  ): Observable<ServiceResult<LINEUserProfile>> {
+    return this._http
+      .request<LINEUserProfile>({
+        url: `${LINE_USER_PROFILE_ENDPOINT}/profile`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .pipe(
+        concatMap((res) => of(res.data)),
+        concatMap((data) => serviceSuccess(data)),
+        catchError((error) => serviceError<LINEUserProfile>(error))
       );
   }
 }

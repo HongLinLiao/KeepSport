@@ -1,22 +1,27 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-
-import useLineLogin from '@/hooks/useLineLogin';
+import useAuth from '@/hooks/useAuth';
+import { SignInType } from '@model';
 
 export const Line = () => {
-  const { login } = useLineLogin();
+  const { signIn } = useAuth();
   const {
-    isReady,
     query: { code, state },
+    push,
   } = useRouter();
 
   useEffect(() => {
     (async function () {
       if (code && state) {
-        await login(code as string, state as string);
+        await signIn({
+          code: code as string,
+          state: state as string,
+          signInType: SignInType.LINE,
+        });
+        push('/');
       }
     })();
-  }, [isReady, code, state, login]);
+  }, [code, state]);
 
   return <></>;
 };

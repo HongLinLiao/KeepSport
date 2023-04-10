@@ -25,3 +25,10 @@ export interface VerifyLINEJWT {
   picture: string;
   email: string;
 }
+
+export interface LINEUserProfile {
+  userId: string;
+  displayName: string;
+  pictureUrl: string;
+  statusMessage: string;
+}

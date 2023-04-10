@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import CookieKey from '@/enums/CookieKey';
 import cookie from 'js-cookie';
-import LoginType from '@/enums/LoginType';
 
 interface CookieOperator<T> {
   get: () => T;
@@ -12,7 +11,12 @@ interface CookieOperator<T> {
 const generator = <T>(key: CookieKey): CookieOperator<T> => {
   return {
     get() {
-      return JSON.parse(cookie.get(key)) as T;
+      const data = cookie.get(key);
+      if (data) {
+        return JSON.parse(cookie.get(key)) as T;
+      } else {
+        return data;
+      }
     },
     set(value) {
       cookie.set(
@@ -28,7 +32,7 @@ const generator = <T>(key: CookieKey): CookieOperator<T> => {
 
 const useCookie = () => {
   const tokenOperator = useMemo(() => {
-    return generator<{ type: LoginType; token: string }>(CookieKey.TOKEN);
+    return generator<string>(CookieKey.TOKEN);
   }, []);
 
   return {

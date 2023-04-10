@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useRouter } from 'next/router';
-import { getLINEOAuthEndpoint, lineLogin } from '@/requests/oauth/line';
+import { getLINEOAuthEndpoint } from '@/requests/auth/line';
 import useRequest from './useRequest';
 
 const useLineLogin = () => {
@@ -12,21 +12,8 @@ const useLineLogin = () => {
     push(url);
   }, [fetch, push]);
 
-  const login = useCallback(
-    (code: string, state: string) => {
-      return fetch(
-        lineLogin({
-          code,
-          state,
-        })
-      );
-    },
-    [fetch]
-  );
-
   return {
     redirectToOAuth,
-    login,
   };
 };
 

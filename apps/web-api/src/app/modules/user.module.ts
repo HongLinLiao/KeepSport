@@ -1,16 +1,14 @@
+import { AuthModule } from './auth.module';
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
-import { AuthController } from '../controllers/auth/auth.controller';
-import { LineService } from '../services/auth/line.service';
 import { AppConfig } from '../services/config.service';
 import { AuthService } from '../services/auth/auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Config } from '../interfaces/Config.interface';
+import { UserController } from '../controllers/auth/user.controller';
 
 @Module({
   imports: [
-    HttpModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (_config: ConfigService) => ({
@@ -18,8 +16,9 @@ import { Config } from '../interfaces/Config.interface';
       }),
       inject: [ConfigService],
     }),
+    AuthModule,
   ],
-  controllers: [AuthController],
-  providers: [AppConfig, AuthService, LineService],
+  controllers: [UserController],
+  providers: [AppConfig, AuthService],
 })
-export class AuthModule {}
+export class UserModule {}

@@ -1,16 +1,25 @@
 import { RequestWrapper } from '@/requests/request';
+import { AxiosRequestConfig } from 'axios';
 import { useMemo } from 'react';
-import useAxios from './useAxios';
+import useAuth from './context/useAuth';
+import useAxios from './context/useAxios';
 
 const useRequest = () => {
   const { axios } = useAxios();
+  const { jwtToken } = useAuth();
 
   const fetch = useMemo(
     () =>
       <T>(requestWrapper: RequestWrapper<T>) => {
-        return requestWrapper.executor(axios).then((res) => res.data);
+        const additionalToRequest: AxiosRequestConfig = {};
+        if (!requestWrapper.additional?.isPublic) {
+          additionalToRequest.headers = { Authorization: `Bearer ${jwtToken}` };
+        }
+        return requestWrapper
+          .executor(axios, additionalToRequest)
+          .then((res) => res.data);
       },
-    [axios]
+    [jwtToken, axios]
   );
 
   return { fetch };

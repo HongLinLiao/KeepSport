@@ -1,3 +1,4 @@
+import { AuthModule } from './app/modules/auth.module';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -30,6 +31,7 @@ async function bootstrap() {
       'https://github.com/HongLinLiao',
       'honglin0822@outlook.com'
     )
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/api/docs', app, document);
