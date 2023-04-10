@@ -1,13 +1,13 @@
 import { createContext } from 'react';
 
-interface IGeneralContext {
+interface IAntDesignContext {
   isDarkMode: boolean;
   toggleDarkMode: () => unknown;
 }
 
-const GeneralContext = createContext<IGeneralContext>({
+const AntDesignContext = createContext<IAntDesignContext>({
   isDarkMode: true,
   toggleDarkMode: () => null,
 });
 
-export default GeneralContext;
+export default AntDesignContext;

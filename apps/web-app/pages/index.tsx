@@ -1,10 +1,7 @@
 import SummarySwiper from '@/containers/summary/SummarySwiper';
-import useGeneral from '@/hooks/useGeneral';
 
-export function Index() {
-  const ctx = useGeneral();
-
+const Index = () => {
   return <SummarySwiper />;
-}
+};
 
 export default Index;
