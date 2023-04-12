@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
@@ -20,6 +20,13 @@ export type NextPageWithProps<P = unknown, IP = P> = NextPage<P, IP> & {
 type AppWithProps = AppProps & {
   Component: NextPageWithProps;
 };
+
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const whyDidYouRender = require('@welldone-software/why-did-you-render');
+  console.debug('Applying whyDidYouRender');
+  whyDidYouRender(React);
+}
 
 function CustomApp({ Component, pageProps }: AppWithProps) {
   const getLayout =

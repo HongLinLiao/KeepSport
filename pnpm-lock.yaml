@@ -31,6 +31,7 @@ specifiers:
   '@types/react-dom': 18.0.11
   '@typescript-eslint/eslint-plugin': ^5.36.1
   '@typescript-eslint/parser': ^5.36.1
+  '@welldone-software/why-did-you-render': ^7.0.1
   antd: ^5.3.3
   autoprefixer: ^10.4.14
   axios: ^1.3.4
@@ -119,6 +120,7 @@ devDependencies:
   '@types/react-dom': 18.0.11
   '@typescript-eslint/eslint-plugin': 5.55.0_hw7gkkoq43b7ymf4exbzzwcocq
   '@typescript-eslint/parser': 5.55.0_hx5tgzcbd2ycqgjduqhliuc3jm
+  '@welldone-software/why-did-you-render': 7.0.1_react@18.2.0
   babel-jest: 29.5.0_@babel+core@7.21.3
   cypress: 12.8.1
   eslint: 8.15.0
@@ -3888,6 +3890,15 @@ packages:
     dependencies:
       '@webassemblyjs/ast': 1.11.1
       '@xtuc/long': 4.2.2
+    dev: true
+
+  /@welldone-software/why-did-you-render/7.0.1_react@18.2.0:
+    resolution: {integrity: sha512-Qe/8Xxa2G+LMdI6VoazescPzjjkHYduCDa8aHOJR50e9Bgs8ihkfMBY+ev7B4oc3N59Zm547Sgjf8h5y0FOyoA==}
+    peerDependencies:
+      react: ^16 || ^17 || ^18
+    dependencies:
+      lodash: 4.17.21
+      react: 18.2.0
     dev: true
 
   /@xtuc/ieee754/1.2.0:
