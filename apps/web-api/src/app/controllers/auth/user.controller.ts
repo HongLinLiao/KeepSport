@@ -1,6 +1,6 @@
 import { catchError, concatMap, of, throwError } from 'rxjs';
 import { Response } from 'express';
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import { Controller, Get, Headers, HttpStatus, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './../../services/auth/auth.service';
 import { UserInfo } from '@model';
@@ -10,10 +10,10 @@ import { UserInfo } from '@model';
 export class UserController {
   constructor(private readonly _auth: AuthService) {}
 
-  @Post('/token')
-  getUser(@Body() body: { token: string }, @Res() res: Response) {
+  @Get('/token')
+  getUser(@Headers('Authorization') auth: string, @Res() res: Response) {
     //TODO: adust to get from user
-    return this._auth.verifyJwtToken(body.token).pipe(
+    return this._auth.verifyJwtToken(auth.split(' ')[1]).pipe(
       concatMap((svResult) => {
         if (svResult.isOk && svResult.data) {
           return of(res.status(HttpStatus.OK).json(svResult.data as UserInfo));

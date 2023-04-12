@@ -8,25 +8,16 @@ export const signIn = (data: SignInBody) => {
       method: 'POST',
       data,
     },
-    { isPublic: true }
+    {
+      isPublic: true,
+    }
   );
 };
 
-export const authentication = (data: { token: string }) => {
+export const authentication = (token: string) => {
   return requestWrapper<string>(
     {
       url: '/api/internal/auth/authentication',
-      method: 'POST',
-      data,
-    },
-    { isPublic: true }
-  );
-};
-
-export const getUserInfoFromToken = (token: string) => {
-  return requestWrapper<UserInfo>(
-    {
-      url: '/api/internal/user/token',
       method: 'POST',
       data: { token },
     },
@@ -34,4 +25,11 @@ export const getUserInfoFromToken = (token: string) => {
       isPublic: true,
     }
   );
+};
+
+export const getUserInfoFromToken = () => {
+  return requestWrapper<UserInfo>({
+    url: '/api/internal/user/token',
+    method: 'GET',
+  });
 };

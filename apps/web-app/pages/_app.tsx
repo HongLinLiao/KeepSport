@@ -11,6 +11,7 @@ import AntDesignProvider from '@/components/provider/AntDesignProvider';
 import AppLayout from '@/containers/layout/AppLayout';
 import GeneralProvider from '@/components/provider/GeneralProvider';
 import AuthProvider from '@/components/provider/AuthProvider';
+import Startup from '@/containers/util/Startup';
 
 export type NextPageWithProps<P = unknown, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -35,7 +36,7 @@ function CustomApp({ Component, pageProps }: AppWithProps) {
           <AntDesignProvider>
             <AuthProvider>
               <GeneralProvider>
-                {getLayout(<Component {...pageProps} />)}
+                <Startup>{getLayout(<Component {...pageProps} />)}</Startup>
               </GeneralProvider>
             </AuthProvider>
           </AntDesignProvider>
