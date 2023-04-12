@@ -32,25 +32,13 @@ const Drawer = () => {
           <Button onClick={redirectToOAuth}>SignIn</Button>
         )
       }
-      placement={'right'}
+      placement="right"
       width={250}
       onClose={() => setDrawer(false)}
       open={isDrawerOpen}
       closable={false}
       maskClosable
-      // extra={
-      //   <Space>
-      //     <Button onClick={onClose}>Cancel</Button>
-      //     <Button type="primary" onClick={onClose}>
-      //       OK
-      //     </Button>
-      //   </Space>
-      // }
-    >
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-    </AntDrawer>
+    ></AntDrawer>
   );
 };
 

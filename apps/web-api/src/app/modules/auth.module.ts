@@ -21,5 +21,6 @@ import { Config } from '../interfaces/Config.interface';
   ],
   controllers: [AuthController],
   providers: [AppConfig, AuthService, LineService],
+  exports: [AuthService, LineService],
 })
 export class AuthModule {}

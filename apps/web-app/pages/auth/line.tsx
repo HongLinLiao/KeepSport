@@ -1,10 +1,15 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import useAuth from '@/hooks/useAuth';
-import { SignInType } from '@model';
+import { NextPageWithProps } from '../_app';
 
-export const Line = () => {
+import useAuth from '@/hooks/useAuth';
+import useAuthCtx from '@/hooks/context/useAuth';
+import { SignInType } from '@model';
+import { Space, Spin } from 'antd';
+
+export const Line: NextPageWithProps = () => {
   const { signIn } = useAuth();
+  const { setJwtToken } = useAuthCtx();
   const {
     query: { code, state },
     push,
@@ -13,17 +18,24 @@ export const Line = () => {
   useEffect(() => {
     (async function () {
       if (code && state) {
-        await signIn({
+        const token = await signIn({
           code: code as string,
           state: state as string,
           signInType: SignInType.LINE,
         });
+        setJwtToken(token);
         push('/');
       }
     })();
   }, [code, state]);
 
-  return <></>;
+  return (
+    <Space className="w-full h-screen flex justify-center items-center">
+      <Spin size="large" />
+    </Space>
+  );
 };
+
+Line.getLayout = () => <Line />;
 
 export default Line;

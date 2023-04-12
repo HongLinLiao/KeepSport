@@ -12,11 +12,7 @@ const generator = <T>(key: CookieKey): CookieOperator<T> => {
   return {
     get() {
       const data = cookie.get(key);
-      if (data) {
-        return JSON.parse(cookie.get(key)) as T;
-      } else {
-        return data;
-      }
+      return data ? (JSON.parse(cookie.get(key)) as T) : data;
     },
     set(value) {
       cookie.set(

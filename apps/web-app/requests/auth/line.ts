@@ -6,6 +6,8 @@ export const getLINEOAuthEndpoint = () => {
       url: '/api/internal/auth/line',
       method: 'GET',
     },
-    { isPublic: true }
+    {
+      isPublic: true,
+    }
   );
 };

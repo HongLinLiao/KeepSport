@@ -48,7 +48,7 @@ const AxiosProvider: FC<Props> = ({ children }) => {
 
   return (
     <AxiosContext.Provider value={{ axios: axInstance }}>
-      {axInstance ? children : <></>}
+      {axInstance && children}
     </AxiosContext.Provider>
   );
 };
