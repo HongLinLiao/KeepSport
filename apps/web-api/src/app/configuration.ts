@@ -1,7 +1,7 @@
 import { Env } from './enums/Env.enum';
-import { Config } from './interfaces/Config.interface';
+import { IConfig } from './interfaces/Config.interface';
 
-const configuration = (): { config: Config } => ({
+const configuration = (): { config: IConfig } => ({
   config: {
     env: (process.env.ENV as Env) || Env.LOCAL,
     port: parseInt(process.env.PORT, 10) || 3000,

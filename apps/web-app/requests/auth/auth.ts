@@ -1,10 +1,10 @@
 import { requestWrapper } from '../request';
-import { SignInBody, UserInfo } from '@model';
+import { SignInReq, UserInfo } from '@model';
 
-export const signIn = (data: SignInBody) => {
+export const signIn = (data: SignInReq) => {
   return requestWrapper<string>(
     {
-      url: '/api/internal/auth/signIn',
+      url: '/api/internal/auth/login',
       method: 'POST',
       data,
     },
@@ -15,21 +15,16 @@ export const signIn = (data: SignInBody) => {
 };
 
 export const authentication = (token: string) => {
-  return requestWrapper<string>(
-    {
-      url: '/api/internal/auth/authentication',
-      method: 'POST',
-      data: { token },
-    },
-    {
-      isPublic: true,
-    }
-  );
+  return requestWrapper<string>({
+    url: '/api/internal/auth',
+    method: 'POST',
+    data: { token },
+  });
 };
 
-export const getUserInfoFromToken = () => {
+export const getCurrentUser = () => {
   return requestWrapper<UserInfo>({
-    url: '/api/internal/user/token',
+    url: '/api/internal/auth/login/user',
     method: 'GET',
   });
 };

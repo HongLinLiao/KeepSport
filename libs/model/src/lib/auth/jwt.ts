@@ -1,9 +1,33 @@
+// import { ApiProperty } from '@nestjs/swagger';
+// import { IsString, IsEnum, IsNotEmpty } from 'class-validator';
+
 export enum SignInType {
-  LINE = 1,
+  LINE = 'LINE',
 }
 
-export interface SignInBody {
+export interface SignInReq {
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
   code: string;
+
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
   state: string;
+
+  // @ApiProperty({
+  //   enum: SignInType,
+  //   example: SignInType.LINE,
+  // })
+  // @IsEnum(SignInType)
+  // @IsNotEmpty()
   signInType: SignInType;
+}
+
+export interface AuthenticationReq {
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  token: string;
 }
