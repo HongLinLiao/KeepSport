@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { AuthController } from '../controllers/auth/auth.controller';
 import { LineService } from '../services/auth/line.service';
 import { AppConfig } from '../services/config.service';
 import { AuthService } from '../services/auth/auth.service';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { IConfig } from '../interfaces/Config.interface';
 import { UserModule } from './user.module';
 

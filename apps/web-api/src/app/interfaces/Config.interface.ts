@@ -7,4 +7,5 @@ export interface IConfig {
   line_oauth_client_secret: string;
   line_oauth_redirect_url: string;
   jwt_secret: string;
+  mongo_connection: string;
 }
