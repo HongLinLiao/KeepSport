@@ -1,8 +1,11 @@
-import { IDataAccessService } from '../../interfaces/DataAccessService';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+import { IDataAccessService } from '../../interfaces/DataAccessService';
 import { User, UserSchema } from '../../models/data/User';
 import { MongoService } from '../../services/repository/mongo.service';
+import { IConfig } from '../../interfaces/Config.interface';
 
 @Module({
   imports: [
@@ -13,9 +16,14 @@ import { MongoService } from '../../services/repository/mongo.service';
         collection: User.name.toLowerCase(),
       },
     ]),
-    MongooseModule.forRoot(
-      'mongodb+srv://root:kDzYpnmhE4UYnlyN@keep-sport-dev.pyv19n5.mongodb.net/main'
-    ),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (_config: ConfigService) => ({
+        uri: _config.get<IConfig>('config').mongo_connection,
+        dbName: 'main',
+      }),
+      inject: [ConfigService],
+    }),
   ],
   providers: [
     {
