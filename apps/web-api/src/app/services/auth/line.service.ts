@@ -2,10 +2,9 @@ import { ThirdPartyJwtInfo } from './../../models/services/jwt.interface';
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { v4 as uuid } from 'uuid';
-import { concatMap, of, catchError, Observable, throwError } from 'rxjs';
+import { concatMap, of, Observable, map } from 'rxjs';
 
 import { AppConfig } from './../config.service';
-import { serviceSuccess, serviceError, ServiceResult } from '../service-result';
 import {
   LINEOAuth,
   VerifyLINEJWT,
@@ -37,7 +36,7 @@ export class LineService {
     this.redirectUrl = config.line_oauth_redirect_url;
   }
 
-  getOAuthEndpoint(): Observable<ServiceResult<string>> {
+  getOAuthEndpoint(): Observable<string> {
     const queryStrings: { key: string; value: string }[] = [
       { key: 'response_type', value: 'code' },
       { key: 'client_id', value: this.clientId },
@@ -50,49 +49,35 @@ export class LineService {
     ];
 
     return of(queryStrings).pipe(
-      concatMap((queries) =>
-        of(
+      map(
+        (queries) =>
           `${LINE_AUTHORIZE_ENDPOINT}/authorize?${queries
             .map((e) => `${e.key}=${e.value}`)
             .join('&')}`
-        )
-      ),
-      concatMap((data) => serviceSuccess(data)),
-      catchError((error) => serviceError<string>(error))
+      )
     );
   }
 
-  signIn(code: string): Observable<ServiceResult<ThirdPartyJwtInfo>> {
+  signIn(code: string): Observable<ThirdPartyJwtInfo> {
     return this.getToken(code).pipe(
-      concatMap((tokenResult) => {
-        if (tokenResult.isOk && tokenResult.data) {
-          return this.getUserProfile(tokenResult.data.access_token);
-        } else {
-          throwError(() => tokenResult.error);
-        }
-      }),
-      concatMap((profileResult) => {
-        if (profileResult.isOk && profileResult.data) {
-          const {
-            userId: uid,
-            displayName: userName,
-            pictureUrl: avatar,
-          } = profileResult.data;
-          return serviceSuccess<ThirdPartyJwtInfo>({
-            uid,
-            userName,
-            avatar,
-            signInType: SignInType.LINE,
-          });
-        } else {
-          throwError(() => profileResult.error);
-        }
-      }),
-      catchError((error) => serviceError<ThirdPartyJwtInfo>(error))
+      concatMap((tokenData) => this.getLineUserProfile(tokenData.access_token)),
+      map((profile) => {
+        const {
+          userId: uid,
+          displayName: userName,
+          pictureUrl: avatar,
+        } = profile;
+        return {
+          uid,
+          userName,
+          avatar,
+          signInType: SignInType.LINE,
+        } as ThirdPartyJwtInfo;
+      })
     );
   }
 
-  getToken(code: string): Observable<ServiceResult<LINEOAuth>> {
+  getToken(code: string): Observable<LINEOAuth> {
     return this._http
       .request<LINEOAuth>({
         url: `${LINE_OAUTH_ENDPOINT}/token`,
@@ -108,14 +93,10 @@ export class LineService {
           client_secret: this.clientSecret,
         },
       })
-      .pipe(
-        concatMap((res) => of(res.data)),
-        concatMap((data) => serviceSuccess(data)),
-        catchError((error) => serviceError<LINEOAuth>(error))
-      );
+      .pipe(map((res) => res.data));
   }
 
-  verifyToken(accessToken: string): Observable<ServiceResult<VerifyLINEOAuth>> {
+  verifyToken(accessToken: string): Observable<VerifyLINEOAuth> {
     return this._http
       .request<VerifyLINEOAuth>({
         url: `${LINE_OAUTH_ENDPOINT}/verify`,
@@ -127,14 +108,10 @@ export class LineService {
           access_token: accessToken,
         },
       })
-      .pipe(
-        concatMap((res) => of(res.data)),
-        concatMap((data) => serviceSuccess(data)),
-        catchError((error) => serviceError<VerifyLINEOAuth>(error))
-      );
+      .pipe(map((res) => res.data));
   }
 
-  refreshToken(refreshToken: string): Observable<ServiceResult<LINEOAuth>> {
+  refreshToken(refreshToken: string): Observable<LINEOAuth> {
     return this._http
       .request<LINEOAuth>({
         url: `${LINE_OAUTH_ENDPOINT}/token`,
@@ -149,38 +126,29 @@ export class LineService {
           client_secret: this.clientSecret,
         },
       })
-      .pipe(
-        concatMap((res) => of(res.data)),
-        concatMap((data) => serviceSuccess(data)),
-        catchError((error) => serviceError<LINEOAuth>(error))
-      );
+      .pipe(map((res) => res.data));
   }
 
-  revokeToken(token: string): Observable<ServiceResult> {
-    return this._http
-      .request({
-        url: `${LINE_OAUTH_ENDPOINT}/revoke`,
-        method: 'POST',
-        headers: {
-          'Content-Type': REQUEST_CONTENT_TYPE,
-        },
-        data: {
-          access_token: token,
-          client_id: this.clientId,
-          client_secret: this.clientSecret,
-        },
-      })
-      .pipe(
-        concatMap(() => serviceSuccess()),
-        catchError((error) => serviceError(error))
-      );
+  revokeToken(token: string): Observable<unknown> {
+    return this._http.request({
+      url: `${LINE_OAUTH_ENDPOINT}/revoke`,
+      method: 'POST',
+      headers: {
+        'Content-Type': REQUEST_CONTENT_TYPE,
+      },
+      data: {
+        access_token: token,
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+      },
+    });
   }
 
   verifyIdToken(
     idToken: string,
     nonce?: string,
     userId?: string
-  ): Observable<ServiceResult<VerifyLINEJWT>> {
+  ): Observable<VerifyLINEJWT> {
     return this._http
       .request<VerifyLINEJWT>({
         url: `${LINE_OAUTH_ENDPOINT}/verify`,
@@ -195,16 +163,10 @@ export class LineService {
           user_id: userId,
         },
       })
-      .pipe(
-        concatMap((res) => of(res.data)),
-        concatMap((data) => serviceSuccess(data)),
-        catchError((error) => serviceError<VerifyLINEJWT>(error))
-      );
+      .pipe(map((res) => res.data));
   }
 
-  getUserProfile(
-    accessToken: string
-  ): Observable<ServiceResult<LINEUserProfile>> {
+  getLineUserProfile(accessToken: string): Observable<LINEUserProfile> {
     return this._http
       .request<LINEUserProfile>({
         url: `${LINE_USER_PROFILE_ENDPOINT}/profile`,
@@ -213,10 +175,6 @@ export class LineService {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-      .pipe(
-        concatMap((res) => of(res.data)),
-        concatMap((data) => serviceSuccess(data)),
-        catchError((error) => serviceError<LINEUserProfile>(error))
-      );
+      .pipe(map((res) => res.data));
   }
 }

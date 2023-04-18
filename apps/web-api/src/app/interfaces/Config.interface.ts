@@ -1,6 +1,6 @@
 import { Env } from '../enums/Env.enum';
 
-export interface Config {
+export interface IConfig {
   env: Env;
   port: number;
   line_oauth_client_id: string;

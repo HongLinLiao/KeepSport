@@ -1,9 +1,9 @@
 import {
   signIn as signInRequest,
   authentication as authenticationRequest,
-  getUserInfoFromToken,
+  getCurrentUser as getCurrentUserRequest,
 } from '@/requests/auth/auth';
-import { SignInBody } from '@model';
+import { SignInReq } from '@model';
 import useRequest from './useRequest';
 import useAuthCtx from '@/hooks/context/useAuth';
 
@@ -11,7 +11,7 @@ const useAuth = () => {
   const { fetch } = useRequest();
   const { setJwtToken } = useAuthCtx();
 
-  const signIn = (data: SignInBody) => {
+  const signIn = (data: SignInReq) => {
     return fetch(signInRequest(data));
   };
 
@@ -19,8 +19,8 @@ const useAuth = () => {
     return fetch(authenticationRequest(token));
   };
 
-  const getUserInfo = () => {
-    return fetch(getUserInfoFromToken());
+  const getCurrentUserInfo = () => {
+    return fetch(getCurrentUserRequest());
   };
 
   const signOut = () => {
@@ -31,7 +31,7 @@ const useAuth = () => {
     signIn,
     authentication,
     signOut,
-    getUserInfo,
+    getCurrentUserInfo,
   };
 };
 

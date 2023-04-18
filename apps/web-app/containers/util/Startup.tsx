@@ -10,7 +10,7 @@ type Props = {
 
 const Startup: FC<Props> = ({ children }) => {
   const { token } = useCookie();
-  const { authentication, getUserInfo } = useAuth();
+  const { authentication, getCurrentUserInfo } = useAuth();
   const { setJwtToken, setUserInfo, jwtToken } = useAuthCtx();
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const Startup: FC<Props> = ({ children }) => {
   useEffect(() => {
     (async function () {
       if (jwtToken) {
-        const userInfoData = await getUserInfo();
+        const userInfoData = await getCurrentUserInfo();
         token.set(jwtToken);
         setUserInfo(userInfoData);
       } else if (jwtToken === null) {
